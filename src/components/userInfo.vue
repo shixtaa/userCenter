@@ -107,7 +107,6 @@ export default {
       let result = await this.yGet('/user/userinfo',{params})
     },
     async updatePwd(){
-      console.log(params)
       let updateRes=await this.yPut('/user/changePassword',{
         "oldPassword":this.pwdForm.oldPass,
         "newPassword":this.pwdForm.checkPass

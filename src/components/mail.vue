@@ -48,18 +48,22 @@ export default {
     async getItem(){
       let result= await this.yGet('/shop/shopList',{id:this.userInfo._id})
       // console.log("result==>",result)
-      this.itemList=result
-      console.log("itemList", this.itemList)
+      if(result){
+        this.itemList=result
+        console.log("itemList", this.itemList)
+      }
     },
     async exchange(value){
       let result=await this.yPut('/shop/exchange',{id:value})
       if(result){
         let info=await this.yGet('/user/userinfo',{params:{id:this.userInfo._id}})
-        this.setUserInfo(info)
-        this.$message({
-          message:'兑换成功',
-          type:'success'
-        })
+        if(info){
+          this.setUserInfo(info)
+          this.$message({
+            message:'兑换成功',
+            type:'success'
+          })
+        }
       }
     }
   }
