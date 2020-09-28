@@ -1,5 +1,5 @@
 <template>
-  <div class="login">
+  <div class="login"  @keyup.enter="submitForm">
     <div class="login-box">
       <div class="login-img">
         <img src="../assets/auth.png" alt="">
@@ -14,7 +14,7 @@
             <el-input v-model="loginForm.password" placeholder="密码"></el-input>
           </el-form-item>
           <h4>还没有账号？<span @click="jumpReg">新用户注册</span></h4>
-          <el-button type="primary" @click="submitForm()">登录</el-button>
+          <el-button type="primary" @click="submitForm">登录</el-button>
         </el-form>
       </div>
     </div>
@@ -44,6 +44,7 @@ export default {
   },
   methods:{
     ...mapActions(['setUserInfo']),
+    /* 验证登录信息 */
     submitForm() {
         this.$refs["loginForm"].validate((valid) => {
           if (valid) {
@@ -54,11 +55,15 @@ export default {
           }
         });
       },
+      /* 跳转注册页面 */
     jumpReg(){
       this.$router.push({
         name:'regist'
       })
     },
+    /* 登录
+    * 登录成功将结果存储到vuex 并跳转到用户页面
+     */
     async login(){
       const loginRes=await this.yPost('/user/login',this.loginForm)
       console.log(loginRes)

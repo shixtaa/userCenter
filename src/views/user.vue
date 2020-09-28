@@ -2,18 +2,13 @@
   <div class="user-container">
     <div class="user-left">
       <div class="avatar-box">
-        <img :src="list.avatar" alt="">
-        <span>{{list.username}}</span>
+        <img :src="userInfo.avatar" alt="">
+        <span>{{userInfo.username}}</span>
       </div>
       <div class="control">
         <span @click="changeModel('tabuser')" :style="{backgroundColor:currentTabComponent==='tabuser'?'#494ca2':''}">个人中心</span>
         <span @click="changeModel('tabmail')" :style="{backgroundColor:currentTabComponent==='tabmail'?'#494ca2':''}">积分商城</span>
-        <!-- <span @click="quit">退出</span> -->
-        <template>
-          <el-popconfirm title="确定退出吗？" @onConfirm="quit">
-            <span slot="reference" >退出</span>
-          </el-popconfirm>
-        </template>
+        <span @click="quit">退出</span>
       </div>
     </div>
     <div class="user-main">
@@ -28,12 +23,10 @@ export default {
   name:'user',
   data(){
     return {
-      list:{},
       currentTabComponent:this.$route.name
     }
   },
   created(){
-      this.getInfo()
   },
   computed:{
     ...mapState({
@@ -41,24 +34,30 @@ export default {
     })
   },
   methods:{
+    /* 嵌套路由 切换页面*/
     changeModel(name){
       this.currentTabComponent=name
       this.$router.push({
         path:"/user/"+name
       })
     },
-    async getInfo(){
-      this.list=JSON.parse(localStorage.getItem('userInfo')) || {}
-      let params={
-        id:this.list._id
-      }
-      let result = await this.yGet('/user/userinfo',{params})
-    },
+    /* 退出登录 清空登录信息 */
     quit(){
-      localStorage.removeItem('userInfo')
-      this.$router.push({
-        name:'login'
-      })
+      this.$confirm('此操作将退出登录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        localStorage.removeItem('userInfo')
+        this.$router.push({
+          name:'login'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消'
+        });          
+      });
     }
   }
 }

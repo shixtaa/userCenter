@@ -24,6 +24,7 @@ export default {
     }
   },
   methods:{
+    /* 切换tab */
     changeStatus(name){
       this.isClick=name
     }

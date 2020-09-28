@@ -75,6 +75,7 @@ export default {
     }
   },
   methods:{
+    /* 验证注册信息 */
     submitForm() {
         this.$refs["registForm"].validate((valid) => {
           if (valid) {
@@ -85,11 +86,15 @@ export default {
           }
         });
       },
+      /* 跳转到注册页面 */
     jumpLog(){
       this.$router.push({
         name:'login'
       })
     },
+    /* 注册 
+    * 成功后跳转到登录页面 
+    */
     async regist(){
       let registRes=await this.yPost('/user/regist',this.registForm)
       if(registRes){
@@ -97,6 +102,8 @@ export default {
           message:"注册成功",
           type:'success'
         })
+        this.registForm={}
+        this.jumpLog()
       }
     }
   }

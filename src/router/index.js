@@ -64,9 +64,9 @@ const router = new VueRouter({
 
 const originalPush = VueRouter.prototype.push
 VueRouter.prototype.push = function push(location) {
-    return originalPush.call(this, location).catch(err => err)
-}
-
+        return originalPush.call(this, location).catch(err => err)
+    }
+    /* 路由守卫*/
 router.beforeEach((to, from, next) => {
     if (to.name !== 'login' && to.name !== 'regist') {
         let result = localStorage.getItem('userInfo') || ''

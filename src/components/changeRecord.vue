@@ -11,11 +11,13 @@
   </div>
 </template>
 <script>
+import Moment from "moment"
+
 export default {
   name:'changeRecord',
   data(){
     return {
-      list:{},
+      userObj:{},
       exchangeRecord:[]
     }
   },
@@ -23,18 +25,24 @@ export default {
     this.getInfo()
   },
   methods:{
+    /* 获取兑换纪录 */
     async getInfo(){
-      this.list=JSON.parse(localStorage.getItem('userInfo')) || {}
+      this.userObj=JSON.parse(localStorage.getItem('userInfo')) || {}
       let data={
-        id:this.list._id
+        id:this.userObj._id
       }
       let record=await this.yGet('/shop/exchangedRecord',{params:data})
       if(record){
         this.exchangeRecord=record
       }
     }
+  },
+  /* 时间过滤 */
+  filters:{
+    timeFormate(value){
+    return Moment(value).format('YYYY-MM-DD HH:mm')
+    }
   }
-  
 }
 </script>
 <style lang="scss">

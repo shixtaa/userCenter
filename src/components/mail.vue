@@ -12,13 +12,25 @@
           <img :src="item.image" alt="">
           <p>{{item.name}}</p>
           <div class="item-ft">
-            <img src="../assets/img5.png" alt="">
-            <span>{{item.price}}积分</span>
-            <button @click="exchange(item._id)">兑换</button>
+            <div>
+              <img src="../assets/img5.png" alt="">
+              <span>{{item.price}}积分</span>
+            </div>
+            <button class="exchange-btn" type="text"  @click="show(item._id)">兑换</button>
           </div>
         </div>
       </div>
     </div>
+    <el-dialog
+      title="提示"
+      :visible.sync="visible"
+      width="30%">
+      <span>是否兑换该商品？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="visible = false">取 消</el-button>
+        <el-button type="primary" @click="exchange">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -28,6 +40,8 @@ export default {
   data(){
     return {
       itemList:[],
+      visible:false,
+      item:""
     }
   },
   computed:{
@@ -36,34 +50,47 @@ export default {
     })
   },
   created(){
-    this.test=this.userInfo
-    console.log(this.userInfo)
+    this.getUserInfo()
     this.getItem()
-    // this.userInfo()
   },
   methods:{
     ...mapActions([
-      'setUserInfo'
+      'setUserInfo',
+      'getUserInfo'
     ]),
+    /* 获取商品列表 */
     async getItem(){
       let result= await this.yGet('/shop/shopList',{id:this.userInfo._id})
-      // console.log("result==>",result)
       if(result){
         this.itemList=result
         console.log("itemList", this.itemList)
       }
     },
-    async exchange(value){
-      let result=await this.yPut('/shop/exchange',{id:value})
+    // async getUserInfo(){
+    //   let result= await this.yGet('/user/userinfo',{params:{id:this.userInfo._id}})
+    //   // console.log("result==>",result)
+    //   if(result){
+    //     this.setUserInfo(result)
+    //       
+    //   }
+    // },
+    /* 显示确认兑换弹窗 */
+    show(value){
+      this.item=value 
+      this.visible=true
+    },
+    /* 兑换
+    * 成功后重新获取用户信息存储到vuex，使当前积分实时变化
+    */
+    async exchange(){
+      let result=await this.yPut('/shop/exchange',{id:this.item})
       if(result){
-        let info=await this.yGet('/user/userinfo',{params:{id:this.userInfo._id}})
-        if(info){
-          this.setUserInfo(info)
-          this.$message({
-            message:'兑换成功',
-            type:'success'
-          })
-        }
+        this.getUserInfo()
+        this.visible=false
+        this.$message({
+          message:'兑换成功',
+          type:'success'
+        })
       }
     }
   }
@@ -107,20 +134,23 @@ export default {
         display: flex;
         flex-wrap: wrap;
         .per-item{
-          width: 200px;
-          height: 250px;
+          width: 250px;
+          height: 320px;
           border: 1px solid #eee;
           border-radius: 5px;
-          margin-right:30px;
+          margin:30px 50px;
           display: flex;
           flex-direction: column;
           overflow: hidden;
+          box-shadow: 0 3px 5px #eee;
           img{
-            width: 200px;
-            height: 200px;
+            width: 250px;
+            height: 250px;
+            margin-bottom: 10px;
           }
           p{
-            width: 200px;
+            width: 230px;
+            padding: 0 10px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
@@ -132,22 +162,32 @@ export default {
             padding: 0 10px;
             box-sizing: border-box;
             line-height: 30px;
-            img{
-              width: 20px;
-              height: 20px;
-              margin-right: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            div{
+              display: flex;
+              align-items: center;
+              img{
+                width: 20px;
+                height: 20px;
+                margin: 0 5px 0 0;
+              }
+              span{
+                height: 20px;
+                line-height: 20px;
+              }
             }
-            button{
+            .exchange-btn{
               display: inline-block;
-              width: 35px;
-              height: 20px;
+              width: 45px;
+              height: 28px;
               background-color: #726DD4;
               color: #fff;
               border-radius: 3px;
               outline: none;
               border:none;
-              float: right;
-              font-size: 10px;
+              font-size: 14px;
             }
           }
         }
